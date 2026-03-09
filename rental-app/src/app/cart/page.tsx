@@ -2,150 +2,168 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-const cartItems = [
-    {
-        name: "Sony A7 IV Camera",
-        price: "₹4,500",
-        duration: "3 Days Rental",
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBEEXbcD6V7aZtwa9oU4gwc3bliehr3O7RpqtAQi2NQGLJD48k7Of2E737EfscWGq05P7CrGMXY3senCHxiM7E8x1MgInqE6TN2HPb2ae9fjymx77UhaTwI3fDx1ClEHgOAe3eYE0gZY4P19Fk_nsLhrGpr-8hUjGDFydaHz1kfiHzzecGejCVZqeRLkgD3amF4GdO0-DnlKW-WQ3z977v-63b9SfyJsBLhjSJFaGQikjCHRHtweHO_K1ciiDriG46g0gSs16Sf3A",
-    },
-    {
-        name: "24-70mm f/2.8 GM II",
-        price: "₹3,000",
-        duration: "3 Days Rental",
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBHzuDWKHqwh4Yj8EW-sZbW-6vvE0Pzq9GOcN7axSfgJq1CzXUmA_G7hiFufOWf9nTVzupX2XP3dnScUioTbMw8V6qnTVixHaBqY2MfiBlv7J1XsccEfc6fvOU6JLz9IDvBqM6BaafqbzDzRkQntNnyQopGNt8dkiIfNDKx6IEkGctiBKvyRdc9hLqfxyO2bSOZLXxF4tyR-VlYcm0kW_B138amva-6G9MQbgTehXG1q1jrCLfYcn7JywlmRU3YHB_swg_EHNbfcQ",
-    },
-    {
-        name: "DJI RS 3 Pro Gimbal",
-        price: "₹2,500",
-        duration: "2 Days Rental",
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAM2g3xi9v_61dPGSXrR1XvyDQ9bSO8H0KKVT2xIiK1qq8UekgJKkP8vrbIVjuKU2gAUVEqM-lOekgn3xnhBjU4g8qtDKbQKR6MBu7-gm7pBGVF_YIM4pgRuRvRz5YR1326nSArjUMDKSDjqe-HiRV7OOd4bbNvzlOehW0Rr0g7ty4aNFnmlhdRSbjMGQIY5D383Mer8x4MJgf24wVwA0p1JYeEt8t3bospcUDtvzGVGS0YN05u0RNkdOER0RpWD3xDAWQ-yUCQaA",
-    },
-];
+import { useCartStore } from "@/lib/cartStore";
+import { motion, AnimatePresence } from "framer-motion";
+import BottomNav from "@/components/BottomNav";
 
 export default function CartPage() {
     const router = useRouter();
+    const { items, removeItem, updateDuration, getTotal } = useCartStore();
+
+    const subtotal = getTotal();
+    const deposit = items.length > 0 ? 500 : 0; // Fixed deposit if there are items
+    const delivery = 0; // Free delivery
+    const total = subtotal + deposit + delivery;
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark pb-32 font-display text-slate-900 dark:text-slate-100">
-
+        <div className="relative min-h-screen bg-slate-50 dark:bg-slate-900 pb-32 font-display text-slate-900 dark:text-slate-100 antialiased">
+            
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-primary/10">
-                <button
-                    onClick={() => router.back()}
-                    className="text-primary flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 cursor-pointer"
-                >
-                    <span className="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
-                    Your Cart
-                </h2>
-            </div>
-
-            {/* Cart Items */}
-            <div className="flex flex-col gap-4 p-4">
-                {cartItems.map((item, idx) => (
-                    <div
-                        key={idx}
-                        className="flex gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl shadow-sm border border-primary/5"
+            <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between px-4 py-3">
+                    <button
+                        onClick={() => router.back()}
+                        className="size-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                     >
-                        <div
-                            className="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[80px] shrink-0"
-                            style={{ backgroundImage: `url("${item.img}")` }}
-                        />
-                        <div className="flex flex-1 flex-col justify-between">
-                            <div>
-                                <p className="text-slate-900 dark:text-slate-100 text-base font-semibold leading-tight">
-                                    {item.name}
-                                </p>
-                                <p className="text-primary text-sm font-medium mt-1">
-                                    {item.price}{" "}
-                                    <span className="text-slate-500 dark:text-slate-400 font-normal">/ day</span>
-                                </p>
-                            </div>
-                            <p className="text-slate-500 dark:text-slate-400 text-xs font-normal">{item.duration}</p>
-                        </div>
-                        <div className="flex flex-col items-end justify-between">
-                            <button className="text-slate-400 hover:text-red-500 transition-colors">
-                                <span className="material-symbols-outlined text-sm">delete</span>
-                            </button>
-                            <div className="flex items-center gap-3 bg-background-light dark:bg-slate-700 rounded-full px-2 py-1">
-                                <button className="flex h-6 w-6 items-center justify-center rounded-full bg-white dark:bg-slate-600 text-primary shadow-sm">
-                                    −
-                                </button>
-                                <span className="text-sm font-bold w-4 text-center">1</span>
-                                <button className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white shadow-sm">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Order Summary */}
-            <div className="mx-4 mt-6 p-6 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20">
-                <h3 className="text-slate-900 dark:text-slate-100 font-bold mb-4">Rental Summary</h3>
-                <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Subtotal</span>
-                        <span className="font-medium">₹27,500</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Security Deposit (Refundable)</span>
-                        <span className="font-medium">₹5,000</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-slate-500 dark:text-slate-400">Delivery Fee</span>
-                        <span className="text-green-600 font-medium">FREE</span>
-                    </div>
-                    <div className="pt-3 border-t border-primary/10 flex justify-between">
-                        <span className="text-base font-bold text-slate-900 dark:text-slate-100">Total Amount</span>
-                        <span className="text-xl font-bold text-primary">₹32,500</span>
-                    </div>
+                        <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+                    </button>
+                    <h1 className="text-lg font-extrabold tracking-tight">Shopping Cart</h1>
+                    <div className="size-9" />
                 </div>
-            </div>
+            </header>
 
-            {/* Checkout Button */}
-            <div className="p-4 mt-4">
-                <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
-                    <span>Proceed to Rent</span>
-                    <span className="material-symbols-outlined">arrow_forward</span>
-                </button>
-                <p className="text-center text-xs text-slate-400 mt-4 px-8">
-                    By proceeding, you agree to Pro Rental&apos;s terms of service and damage policy.
-                </p>
-            </div>
-
-            {/* Bottom Nav */}
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-50">
-                <div className="flex items-center justify-around bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl px-4 py-3 rounded-full shadow-2xl border border-white/20 dark:border-slate-800/50">
-                    <Link href="/" className="flex flex-col items-center gap-1 text-slate-400">
-                        <span className="material-symbols-outlined">home</span>
-                        <p className="text-[10px] font-medium">Home</p>
-                    </Link>
-                    <Link href="/nearby" className="flex flex-col items-center gap-1 text-slate-400">
-                        <span className="material-symbols-outlined">search</span>
-                        <p className="text-[10px] font-medium">Explore</p>
-                    </Link>
-                    <Link href="/cart" className="flex flex-col items-center gap-1 text-primary relative">
-                        <span className="material-symbols-outlined font-fill">shopping_cart</span>
-                        <p className="text-[10px] font-bold">Cart</p>
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">
-                            3
+            <main className="px-4 pt-6">
+                {items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center pt-24 pb-12">
+                        <div className="size-32 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-6xl text-slate-300">shopping_cart</span>
                         </div>
-                    </Link>
-                    <Link href="/saved" className="flex flex-col items-center gap-1 text-slate-400">
-                        <span className="material-symbols-outlined">favorite</span>
-                        <p className="text-[10px] font-medium">Saved</p>
-                    </Link>
-                    <Link href="/profile" className="flex flex-col items-center gap-1 text-slate-400">
-                        <span className="material-symbols-outlined">person</span>
-                        <p className="text-[10px] font-medium">Profile</p>
-                    </Link>
-                </div>
-            </div>
+                        <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
+                        <p className="text-slate-500 text-sm mb-8 text-center px-4">
+                            Looks like you haven't added any items to rent yet. Browse our catalog to find what you need.
+                        </p>
+                        <Link href="/" className="bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-8 rounded-full shadow-lg shadow-primary/25 transition-all">
+                            Start Browsing
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="font-extrabold text-sm text-slate-500 uppercase tracking-wider">
+                                {items.length} Item{items.length !== 1 && "s"} in Cart
+                            </h2>
+                        </div>
+
+                        {/* Cart Items List */}
+                        <div className="space-y-4 mb-8">
+                            <AnimatePresence>
+                                {items.map((cartItem) => (
+                                    <motion.div
+                                        key={cartItem.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9, height: 0, marginBottom: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-3 flex gap-3 shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden"
+                                    >
+                                        <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden shrink-0">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={cartItem.item.images?.[0] || 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400'}
+                                                alt={cartItem.item.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex flex-1 flex-col py-1">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <h3 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 leading-tight">
+                                                    {cartItem.item.name}
+                                                </h3>
+                                                <button
+                                                    onClick={() => removeItem(cartItem.id)}
+                                                    className="size-6 bg-rose-50 dark:bg-rose-900/20 rounded-full flex items-center justify-center shrink-0 hover:bg-rose-100 text-rose-500 transition-colors"
+                                                >
+                                                    <span className="material-symbols-outlined text-[14px]">close</span>
+                                                </button>
+                                            </div>
+                                            <p className="text-xs text-slate-400 mt-1 capitalize">
+                                                Pricing: <span className="font-semibold text-slate-600 dark:text-slate-300">{cartItem.pricingType}</span>
+                                            </p>
+                                            
+                                            <div className="mt-auto flex items-center justify-between pt-2">
+                                                <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg p-1 gap-3">
+                                                    <button 
+                                                        onClick={() => updateDuration(cartItem.id, cartItem.duration - 1)}
+                                                        disabled={cartItem.duration <= 1}
+                                                        className="size-6 bg-white dark:bg-slate-600 rounded flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm disabled:opacity-50"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[16px]">remove</span>
+                                                    </button>
+                                                    <span className="text-xs font-bold w-4 text-center">{cartItem.duration}</span>
+                                                    <button 
+                                                        onClick={() => updateDuration(cartItem.id, cartItem.duration + 1)}
+                                                        className="size-6 bg-white dark:bg-slate-600 rounded flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[16px]">add</span>
+                                                    </button>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-sm font-extrabold text-primary">₹{cartItem.price * cartItem.duration}</span>
+                                                    <p className="text-[9px] text-slate-400">₹{cartItem.price} / {cartItem.pricingType.replace('ly', '')}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Order Summary */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 mb-8">
+                            <h3 className="font-bold mb-4 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-[18px]">receipt_long</span>
+                                Order Summary
+                            </h3>
+                            <div className="space-y-3">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-500 dark:text-slate-400">Subtotal</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-300">₹{subtotal.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-500 dark:text-slate-400">Security Deposit (Refundable)</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-300">₹{deposit.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-slate-500 dark:text-slate-400">Delivery Fee</span>
+                                    <span className="font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 rounded-md">FREE</span>
+                                </div>
+                                
+                                <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700 flex flex-col">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-sm font-bold">Total Amount</span>
+                                        <span className="text-2xl font-extrabold text-primary">₹{total.toLocaleString()}</span>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 text-right mt-1">Includes all taxes and fees</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Checkout CTA */}
+                        <div className="fixed bottom-[80px] left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-100 dark:border-slate-800 p-4 z-40 pb-safe">
+                            <div className="max-w-md mx-auto">
+                                <Link href="/checkout" className="block w-full">
+                                    <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
+                                        <span>Proceed to Checkout</span>
+                                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </main>
+            <BottomNav />
         </div>
     );
 }

@@ -1,9 +1,6 @@
 import ProductDetailClient from "./ProductDetailClient";
 
-export function generateStaticParams() {
-    return [{ id: "1" }, { id: "2" }, { id: "3" }];
-}
-
-export default function ProductDetailPage() {
-    return <ProductDetailClient />;
+export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = await params;
+    return <ProductDetailClient id={resolvedParams.id} />;
 }
